@@ -10,12 +10,11 @@
       padding: 0;
       height: 100%;
       overflow: hidden;
-      background: url('background.jpg') no-repeat center center fixed;
-      background-size: cover;
-      animation: fadeIn 2s ease-in forwards;
-      cursor: none;
+      background: black;
+      animation: fadeInFromBlack 2s ease-in forwards;
+      cursor: default;
     }
-    @keyframes fadeIn {
+    @keyframes fadeInFromBlack {
       from { opacity: 0; }
       to { opacity: 1; }
     }
@@ -33,11 +32,17 @@
       background: url('picture.png') no-repeat center center;
       background-size: contain;
       pointer-events: none;
-      animation: fall linear infinite, spin 5s linear infinite;
+      animation: fall linear infinite, spin 4s linear infinite;
     }
     @keyframes fall {
-      0% { transform: translateY(-50px) rotate(0deg); opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0.5; }
+      0% {
+        transform: translateY(-50px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0.5;
+      }
     }
     @keyframes spin {
       0% { transform: rotate(0deg); }
@@ -50,13 +55,13 @@
   <audio id="music" src="music.mp3"></audio>
 
   <script>
-    // Play music on click
+    // Play music on first click
     document.body.addEventListener('click', () => {
       const audio = document.getElementById('music');
       audio.play();
     }, { once: true });
 
-    // Snowflake generator
+    // Falling snowflakes from top of screen
     function createSnowflake() {
       const flake = document.createElement('div');
       flake.classList.add('snowflake');
@@ -68,69 +73,60 @@
     }
     setInterval(createSnowflake, 300);
 
-    // Particle effect on cursor
+    // Canvas setup for cursor snow particles
     const canvas = document.getElementById('cursorCanvas');
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let particles = [];
-    let mouse = {
-      x: null,
-      y: null
-    };
+    let cursorFlakes = [];
+    let mouse = { x: null, y: null };
 
-    window.addEventListener('mousemove', function(e) {
-      mouse.x = e.x;
-      mouse.y = e.y;
-    });
-
-    function randomRGB() {
-      const r = Math.floor(Math.random() * 255);
-      const g = Math.floor(Math.random() * 255);
-      const b = Math.floor(Math.random() * 255);
-      return `rgb(${r}, ${g}, ${b})`;
+    class CursorSnowflake {
+      constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = Math.random() * 3 + 2;
+        this.speedY = Math.random() * 1 + 0.5;
+        this.speedX = (Math.random() - 0.5) * 0.5;
+        this.alpha = 1;
+      }
+      update() {
+        this.y += this.speedY;
+        this.x += this.speedX;
+        this.alpha -= 0.01;
+      }
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = 'white';
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
     }
 
-    function Particle(x, y) {
-      this.x = x;
-      this.y = y;
-      this.size = Math.random() * 3 + 1;
-      this.color = randomRGB();
-      this.alpha = 1;
-    }
-
-    Particle.prototype.update = function(targetX, targetY) {
-      this.x += (targetX - this.x) * 0.1;
-      this.y += (targetY - this.y) * 0.1;
-      this.alpha -= 0.01;
-    };
-
-    Particle.prototype.draw = function() {
-      ctx.fillStyle = this.color.replace('rgb', 'rgba').replace(')', `, ${this.alpha})`);
-      ctx.beginPath();
-      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-      ctx.fill();
-    };
-
-    function animate() {
+    function animateCursorSnowflakes() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((particle, index) => {
-        particle.update(mouse.x, mouse.y);
-        particle.draw();
-        if (particle.alpha <= 0) {
-          particles.splice(index, 1);
+      cursorFlakes.forEach((flake, index) => {
+        flake.update();
+        flake.draw();
+        if (flake.alpha <= 0) {
+          cursorFlakes.splice(index, 1);
         }
       });
-      requestAnimationFrame(animate);
+      requestAnimationFrame(animateCursorSnowflakes);
     }
-    animate();
+    animateCursorSnowflakes();
 
-    setInterval(() => {
-      if (mouse.x !== null && mouse.y !== null) {
-        particles.push(new Particle(mouse.x, mouse.y));
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+      for (let i = 0; i < 2; i++) {
+        cursorFlakes.push(new CursorSnowflake(mouse.x, mouse.y));
       }
-    }, 20);
+    });
 
     window.addEventListener('resize', () => {
       canvas.width = window.innerWidth;
