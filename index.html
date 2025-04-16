@@ -12,6 +12,7 @@
       background: black;
     }
 
+    /* Background image */
     body::before {
       content: "";
       position: fixed;
@@ -36,6 +37,7 @@
       display: none;
     }
 
+    /* Snow effect canvas */
     canvas {
       position: fixed;
       top: 0;
@@ -73,24 +75,25 @@
       music.play().catch(() => {});
     });
 
-    // Snow effect
+    // Snow effect that follows the cursor
     const canvas = document.getElementById('snow');
     const ctx = canvas.getContext('2d');
     let width, height;
     let snowflakes = [];
+    let mouseX = -100, mouseY = -100;
 
     function resize() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     }
 
-    function createSnowflakes() {
-      snowflakes = Array.from({ length: 150 }, () => ({
-        x: Math.random() * width,
-        y: Math.random() * height,
+    function createSnowflakes(x, y) {
+      snowflakes.push({
+        x: x,
+        y: y,
         r: Math.random() * 3 + 1,
         d: Math.random() * 1 + 0.5
-      }));
+      });
     }
 
     function drawSnowflakes() {
@@ -116,18 +119,22 @@
       }
     }
 
+    // Follow mouse movement to create snowflakes
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      createSnowflakes(mouseX, mouseY);
+    });
+
     function animate() {
       drawSnowflakes();
       requestAnimationFrame(animate);
     }
 
     resize();
-    createSnowflakes();
     animate();
-    window.addEventListener('resize', () => {
-      resize();
-      createSnowflakes();
-    });
+    window.addEventListener('resize', resize);
+
   </script>
 
 </body>
