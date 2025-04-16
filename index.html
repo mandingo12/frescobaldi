@@ -12,6 +12,7 @@
       height: 100%;
       background: url('background.jpg') no-repeat center center fixed;
       background-size: cover;
+      cursor: none; /* Hide the default cursor */
     }
 
     canvas {
@@ -20,11 +21,26 @@
       left: 0;
       pointer-events: none;
     }
+
+    #customCursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background-color: white;
+      opacity: 0.8;
+      pointer-events: none;
+      transform: translate(-50%, -50%); /* Center the custom cursor */
+      transition: transform 0.1s ease-out; /* Smooth movement */
+    }
   </style>
 </head>
 <body>
   <audio id="bgMusic" src="music.mp3"></audio>
   <canvas id="snowCanvas"></canvas>
+  <div id="customCursor"></div>
 
   <script>
     // Play music on first click
@@ -88,6 +104,13 @@
     snowflakeImage.onload = () => {
       updateFlakes();
     };
+
+    // Custom Cursor Logic
+    const customCursor = document.getElementById('customCursor');
+
+    document.addEventListener('mousemove', (e) => {
+      customCursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
+    });
   </script>
 </body>
 </html>
