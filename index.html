@@ -2,161 +2,92 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>the lion does not concern himself with the opinion of sheep</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      height: 100%;
       overflow: hidden;
-      background: black;
-      animation: none;
-      cursor: default;
-    }
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
       height: 100%;
       background: url('background.jpg') no-repeat center center fixed;
       background-size: cover;
-      z-index: -2;
     }
-    body::after {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: black;
-      z-index: -1;
-      animation: fadeInFromBlack 2s ease-in forwards;
-    }
-    @keyframes fadeInFromBlack {
-      from { opacity: 1; }
-      to { opacity: 0; }
-    }
+
     canvas {
       position: absolute;
       top: 0;
       left: 0;
-      z-index: 2;
-      pointer-events: none;
-    }
-    .snowflake {
-      position: absolute;
-      width: 32px;
-      height: 32px;
-      background: url('picture.png') no-repeat center center;
-      background-size: contain;
       pointer-events: none;
     }
   </style>
 </head>
 <body>
-  <canvas id="cursorCanvas"></canvas>
-  <audio id="music" src="music.mp3"></audio>
+  <audio id="bgMusic" src="music.mp3"></audio>
+  <canvas id="snowCanvas"></canvas>
 
   <script>
     // Play music on first click
-    document.body.addEventListener('click', () => {
-      const audio = document.getElementById('music');
-      audio.play();
-    }, { once: true });
-
-    // Falling snowflakes from top of screen
-    function createSnowflake() {
-      const flake = document.createElement('div');
-      flake.classList.add('snowflake');
-      flake.style.left = Math.random() * window.innerWidth + 'px';
-
-      const startX = parseFloat(flake.style.left);
-      const startY = -50;
-      const spinSpeed = (Math.random() * 2 - 1) * 2;
-      let angle = 0;
-      let y = startY;
-
-      function animate() {
-        angle += spinSpeed;
-        y += 1.5 + Math.random();
-        flake.style.transform = `translate(${startX}px, ${y}px) rotate(${angle}deg)`;
-
-        if (y < window.innerHeight + 50) {
-          requestAnimationFrame(animate);
-        } else {
-          flake.remove();
-        }
-      }
-
-      document.body.appendChild(flake);
-      animate();
-    }
-
-    setInterval(createSnowflake, 300);
-
-    // Canvas setup for cursor snow particles
-    const canvas = document.getElementById('cursorCanvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    let cursorFlakes = [];
-    let mouse = { x: null, y: null };
-
-    class CursorSnowflake {
-      constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.size = Math.random() * 3 + 2;
-        this.speedY = Math.random() * 1 + 0.5;
-        this.speedX = (Math.random() - 0.5) * 0.5;
-        this.alpha = 1;
-      }
-      update() {
-        this.y += this.speedY;
-        this.x += this.speedX;
-        this.alpha -= 0.01;
-      }
-      draw() {
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = 'white';
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-    }
-
-    function animateCursorSnowflakes() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      cursorFlakes.forEach((flake, index) => {
-        flake.update();
-        flake.draw();
-        if (flake.alpha <= 0) {
-          cursorFlakes.splice(index, 1);
-        }
-      });
-      requestAnimationFrame(animateCursorSnowflakes);
-    }
-    animateCursorSnowflakes();
-
-    window.addEventListener('mousemove', (e) => {
-      mouse.x = e.x;
-      mouse.y = e.y;
-      for (let i = 0; i < 2; i++) {
-        cursorFlakes.push(new CursorSnowflake(mouse.x, mouse.y));
+    let musicPlayed = false;
+    document.addEventListener('click', () => {
+      if (!musicPlayed) {
+        document.getElementById('bgMusic').play();
+        musicPlayed = true;
       }
     });
+
+    // Setup canvas
+    const canvas = document.getElementById('snowCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
 
     window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
     });
+
+    const snowflakeImage = new Image();
+    snowflakeImage.src = 'picture.png';
+
+    const flakes = [];
+
+    function createFlake() {
+      return {
+        x: Math.random() * width,
+        y: Math.random() * -height,
+        size: 30 + Math.random() * 20,
+        speed: 1 + Math.random() * 2,
+        angle: Math.random() * 2 * Math.PI,
+        rotationSpeed: (Math.random() - 0.5) * 0.02
+      };
+    }
+
+    for (let i = 0; i < 50; i++) {
+      flakes.push(createFlake());
+    }
+
+    function updateFlakes() {
+      ctx.clearRect(0, 0, width, height);
+      flakes.forEach(flake => {
+        flake.y += flake.speed;
+        flake.angle += flake.rotationSpeed;
+        if (flake.y > height + flake.size) {
+          Object.assign(flake, createFlake(), { y: -flake.size });
+        }
+
+        ctx.save();
+        ctx.translate(flake.x, flake.y);
+        ctx.rotate(flake.angle);
+        ctx.drawImage(snowflakeImage, -flake.size/2, -flake.size/2, flake.size, flake.size);
+        ctx.restore();
+      });
+      requestAnimationFrame(updateFlakes);
+    }
+
+    snowflakeImage.onload = () => {
+      updateFlakes();
+    };
   </script>
 </body>
 </html>
