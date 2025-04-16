@@ -1,10 +1,35 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>king frescobaldi</title>
-  </head>
-  <body>
-    <h1>gfhdsjkfhdajkl</h1>
-    <p>fudahjkfdahjklfhda</p>
-  </body>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>I am Frescobaldi.</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: url('FRESCOBALDI.jpg') no-repeat center center fixed;
+      background-size: cover;
+      cursor: url('cursor.png'), auto; 
+    }
+
+    audio {
+      display: none; 
+    }
+  </style>
+</head>
+<body>
+
+  <audio autoplay loop>
+    <source src="music.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    document.addEventListener('click', () => {
+      document.querySelector('audio').play().catch(() => {});
+    });
+  </script>
+
+</body>
 </html>
