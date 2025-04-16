@@ -33,7 +33,7 @@
       opacity: 0.8;
       pointer-events: none;
       transform: translate(-50%, -50%); /* Center the custom cursor */
-      transition: transform 0.1s ease-out; /* Smooth movement */
+      transition: transform 0.1s ease-out, background-color 0.5s ease-in-out; /* Smooth movement and color transition */
     }
   </style>
 </head>
@@ -105,11 +105,16 @@
       updateFlakes();
     };
 
-    // Custom Cursor Logic
+    // Custom Cursor Logic with RGB Transition
     const customCursor = document.getElementById('customCursor');
+    let hue = 0;
 
     document.addEventListener('mousemove', (e) => {
       customCursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
+
+      // Update hue for RGB transition
+      hue = (hue + 2) % 360; // Increment hue slowly
+      customCursor.style.backgroundColor = `hsl(${hue}, 100%, 50%)`; // Use HSL for vibrant colors
     });
   </script>
 </body>
