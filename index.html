@@ -28,12 +28,13 @@
       left: 0;
       width: 20px;
       height: 20px;
-      border-radius: 50%;
+      height: 20px;
       background-color: white;
       opacity: 0.8;
       pointer-events: none;
-      transform: translate(-50%, -50%); /* Center the custom cursor */
-      transition: transform 0.1s ease-out, background-color 0.5s ease-in-out; /* Smooth movement and color transition */
+      transform: translate(-50%, -50%) rotate(0deg); /* Center and initial rotation */
+      transition: transform 0.05s ease-out, background-color 0.1s linear; /* Faster transitions */
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     }
   </style>
 </head>
@@ -105,16 +106,14 @@
       updateFlakes();
     };
 
-    // Custom Cursor Logic with RGB Transition
+    // Custom Cursor Logic with Faster RGB Transition and Star Shape
     const customCursor = document.getElementById('customCursor');
     let hue = 0;
 
     document.addEventListener('mousemove', (e) => {
-      customCursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px)`;
-
-      // Update hue for RGB transition
-      hue = (hue + 2) % 360; // Increment hue slowly
-      customCursor.style.backgroundColor = `hsl(${hue}, 100%, 50%)`; // Use HSL for vibrant colors
+      customCursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px) rotate(${hue}deg)`; // Added rotation
+      hue = (hue + 5) % 360; // Faster hue increment
+      customCursor.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
     });
   </script>
 </body>
