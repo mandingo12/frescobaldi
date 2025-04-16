@@ -12,7 +12,7 @@
       height: 100%;
       background: url('background.jpg') no-repeat center center fixed;
       background-size: cover;
-      cursor: none; /* Hide the default cursor */
+      cursor: none; 
     }
 
     canvas {
@@ -32,8 +32,8 @@
       background-color: white;
       opacity: 0.8;
       pointer-events: none;
-      transform: translate(-50%, -50%) rotate(0deg); /* Center and initial rotation */
-      transition: transform 0.05s ease-out, background-color 0.1s linear; /* Faster transitions */
+      transform: translate(-50%, -50%) rotate(0deg); 
+      transition: transform 0.05s ease-out, background-color 0.1s linear; 
       clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     }
   </style>
@@ -44,7 +44,7 @@
   <div id="customCursor"></div>
 
   <script>
-    // Play music on first click
+    
     let musicPlayed = false;
     document.addEventListener('click', () => {
       if (!musicPlayed) {
@@ -53,7 +53,7 @@
       }
     });
 
-    // Setup canvas
+    
     const canvas = document.getElementById('snowCanvas');
     const ctx = canvas.getContext('2d');
     let width = canvas.width = window.innerWidth;
@@ -106,13 +106,13 @@
       updateFlakes();
     };
 
-    // Custom Cursor Logic with Faster RGB Transition and Star Shape
+    
     const customCursor = document.getElementById('customCursor');
     let hue = 0;
 
     document.addEventListener('mousemove', (e) => {
-      customCursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px) rotate(${hue}deg)`; // Added rotation
-      hue = (hue + 5) % 360; // Faster hue increment
+      customCursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px) rotate(${hue}deg)`; 
+      hue = (hue + 5) % 360; 
       customCursor.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
     });
   </script>
