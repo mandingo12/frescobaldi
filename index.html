@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Vibes Only</title>
+  <title>@cybersecurityexpert</title>
   <style>
     html, body {
       margin: 0;
@@ -12,7 +12,6 @@
       background: black;
     }
 
-    /* Background image */
     body::before {
       content: "";
       position: fixed;
@@ -37,7 +36,6 @@
       display: none;
     }
 
-    /* Snow effect canvas */
     canvas {
       position: fixed;
       top: 0;
@@ -45,21 +43,34 @@
       pointer-events: none;
       z-index: 1;
     }
+
+    .snowflake {
+      position: absolute;
+      font-size: 20px;
+      color: white;
+      user-select: none;
+      pointer-events: none;
+      animation: fall linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- Background music -->
   <audio id="bgMusic" autoplay loop muted>
     <source src="music.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
-  <!-- Snow effect canvas -->
   <canvas id="snow"></canvas>
 
   <script>
-    // Try autoplay immediately
     window.addEventListener('DOMContentLoaded', () => {
       const music = document.getElementById('bgMusic');
       music.muted = false;
@@ -68,73 +79,65 @@
       });
     });
 
-    // Play on first interaction (fallback)
     document.addEventListener('click', () => {
       const music = document.getElementById('bgMusic');
       music.muted = false;
       music.play().catch(() => {});
     });
 
-    // Snow effect that follows the cursor
     const canvas = document.getElementById('snow');
     const ctx = canvas.getContext('2d');
     let width, height;
-    let snowflakes = [];
-    let mouseX = -100, mouseY = -100;
 
     function resize() {
       width = canvas.width = window.innerWidth;
       height = canvas.height = window.innerHeight;
     }
 
-    function createSnowflakes(x, y) {
-      snowflakes.push({
-        x: x,
-        y: y,
-        r: Math.random() * 3 + 1,
-        d: Math.random() * 1 + 0.5
-      });
-    }
-
-    function drawSnowflakes() {
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-      ctx.beginPath();
-      for (let flake of snowflakes) {
-        ctx.moveTo(flake.x, flake.y);
-        ctx.arc(flake.x, flake.y, flake.r, 0, Math.PI * 2, true);
-      }
-      ctx.fill();
-      updateSnowflakes();
-    }
-
-    function updateSnowflakes() {
-      for (let flake of snowflakes) {
-        flake.y += flake.d;
-        flake.x += Math.sin(flake.y * 0.01);
-        if (flake.y > height) {
-          flake.y = -flake.r;
-          flake.x = Math.random() * width;
-        }
-      }
-    }
-
-    // Follow mouse movement to create snowflakes
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-      createSnowflakes(mouseX, mouseY);
-    });
-
-    function animate() {
-      drawSnowflakes();
-      requestAnimationFrame(animate);
-    }
-
     resize();
-    animate();
     window.addEventListener('resize', resize);
 
+    let snowflakes = [];
+
+    function createSnowflake(x, y) {
+      const size = Math.random() * 10 + 5;
+      const color = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+      const speed = Math.random() * 3 + 2;
+      const duration = Math.random() * 2 + 3;
+
+      const snowflake = document.createElement('div');
+      snowflake.textContent = '+';
+      snowflake.classList.add('snowflake');
+      snowflake.style.left = `${x - size / 2}px`;
+      snowflake.style.top = `${y - size / 2}px`;
+      snowflake.style.fontSize = `${size}px`;
+      snowflake.style.color = color;
+      snowflake.style.animationDuration = `${duration}s`;
+      snowflake.style.animationDelay = `${Math.random() * 2}s`;
+
+      document.body.appendChild(snowflake);
+
+      setTimeout(() => {
+        snowflake.remove();
+      }, (duration + 1) * 1000);
+    }
+
+    let isMouseMoving = false;
+
+    document.addEventListener('mousemove', (e) => {
+      if (!isMouseMoving) {
+        isMouseMoving = true;
+        setInterval(() => {
+          if (isMouseMoving) {
+            createSnowflake(e.clientX, e.clientY);
+          }
+        }, 100);
+      }
+    });
+
+    document.addEventListener('mouseleave', () => {
+      isMouseMoving = false;
+    });
   </script>
 
 </body>
