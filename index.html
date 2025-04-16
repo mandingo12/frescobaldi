@@ -11,25 +11,64 @@
       background: url('background.jpg') no-repeat center center fixed;
       background-size: cover;
       cursor: url('cursor.png'), auto; /* optional custom cursor */
+      overflow: hidden;
+    }
+
+    #tap-to-play {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: sans-serif;
+      font-size: 24px;
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 12px 24px;
+      border-radius: 12px;
+      pointer-events: none;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
     }
 
     audio {
-      display: none; /* hide default audio controls */
+      display: none;
     }
   </style>
 </head>
 <body>
 
+  <!-- Optional tap-to-play message -->
+  <div id="tap-to-play">Tap to unmute 🎵</div>
+
   <!-- Background music -->
-  <audio autoplay loop>
+  <audio id="bgMusic" autoplay loop muted>
     <source src="music.mp3" type="audio/mpeg">
     Your browser does not support the audio element.
   </audio>
 
   <script>
-    // In case autoplay is blocked, play on first user interaction
+    window.addEventListener('DOMContentLoaded', () => {
+      const music = document.getElementById('bgMusic');
+
+      // Try to autoplay immediately
+      music.muted = false;
+      music.play().catch((e) => {
+        console.log("Autoplay blocked, waiting for user interaction...");
+      });
+    });
+
+    // If autoplay fails, play on first click & hide message
     document.addEventListener('click', () => {
-      document.querySelector('audio').play().catch(() => {});
+      const music = document.getElementById('bgMusic');
+      const tapMsg = document.getElementById('tap-to-play');
+      if (tapMsg) tapMsg.remove();
+      music.muted = false;
+      music.play().catch(() => {});
     });
   </script>
 
