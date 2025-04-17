@@ -40,17 +40,40 @@
       position: fixed;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) scale(0) rotate(0deg);
       width: 400px;
       height: auto;
-      opacity: 1;
-      transition: transform 2.5s ease;
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0) rotate(0deg);
       pointer-events: none;
       z-index: 10;
     }
 
     #logo.show {
-      transform: translate(-50%, -50%) scale(1) rotate(1440deg);
+      animation: spinPop 2.5s ease forwards, breathe 4s ease-in-out infinite 2.5s;
+    }
+
+    @keyframes spinPop {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0) rotate(0deg);
+        filter: drop-shadow(0 0 0px rgba(255, 255, 255, 0));
+      }
+      100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1) rotate(1440deg);
+        filter: drop-shadow(0 0 35px rgba(255, 255, 255, 1));
+      }
+    }
+
+    @keyframes breathe {
+      0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.8));
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(1.05);
+        filter: drop-shadow(0 0 35px rgba(255, 255, 255, 1));
+      }
     }
   </style>
 </head>
@@ -70,7 +93,9 @@
         musicPlayed = true;
       }
 
-      logo.classList.add('show');
+      if (!logo.classList.contains('show')) {
+        logo.classList.add('show');
+      }
     });
 
     const canvas = document.getElementById('snowCanvas');
