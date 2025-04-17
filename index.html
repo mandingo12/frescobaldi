@@ -28,7 +28,6 @@
       left: 0;
       width: 20px;
       height: 20px;
-      height: 20px;
       background-color: white;
       opacity: 0.8;
       pointer-events: none;
@@ -36,24 +35,44 @@
       transition: transform 0.05s ease-out, background-color 0.1s linear; 
       clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     }
+
+    #logo {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0) rotate(0deg);
+      width: 400px;
+      height: auto;
+      opacity: 1;
+      transition: transform 2.5s ease;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #logo.show {
+      transform: translate(-50%, -50%) scale(1) rotate(1440deg);
+    }
   </style>
 </head>
 <body>
   <audio id="bgMusic" src="music.mp3"></audio>
   <canvas id="snowCanvas"></canvas>
   <div id="customCursor"></div>
+  <img src="site.png" alt="Logo" id="logo" />
 
   <script>
-    
     let musicPlayed = false;
+    const logo = document.getElementById('logo');
+
     document.addEventListener('click', () => {
       if (!musicPlayed) {
         document.getElementById('bgMusic').play();
         musicPlayed = true;
       }
+
+      logo.classList.add('show');
     });
 
-    
     const canvas = document.getElementById('snowCanvas');
     const ctx = canvas.getContext('2d');
     let width = canvas.width = window.innerWidth;
@@ -106,7 +125,6 @@
       updateFlakes();
     };
 
-    
     const customCursor = document.getElementById('customCursor');
     let hue = 0;
 
