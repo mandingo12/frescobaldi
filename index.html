@@ -15,11 +15,14 @@
       cursor: none; 
     }
 
-    canvas {
-      position: absolute;
+    #snowContainer {
+      position: fixed;
       top: 0;
       left: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
+      z-index: 1;
     }
 
     #customCursor {
@@ -34,6 +37,7 @@
       transform: translate(-50%, -50%) rotate(0deg); 
       transition: transform 0.05s ease-out, background-color 0.1s linear; 
       clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      z-index: 100;
     }
 
     #logo {
@@ -79,7 +83,7 @@
 </head>
 <body>
   <audio id="bgMusic" src="music.mp3"></audio>
-  <canvas id="snowCanvas"></canvas>
+  <div id="snowContainer"></div>
   <div id="customCursor"></div>
   <img src="site.png" alt="Logo" id="logo" />
 
@@ -98,57 +102,54 @@
       }
     });
 
-    const canvas = document.getElementById('snowCanvas');
-    const ctx = canvas.getContext('2d');
-    let width = canvas.width = window.innerWidth;
-    let height = canvas.height = window.innerHeight;
-
-    window.addEventListener('resize', () => {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = window.innerHeight;
-    });
-
-    const snowflakeImage = new Image();
-    snowflakeImage.src = 'picture.gif';
-
+    const snowContainer = document.getElementById('snowContainer');
     const flakes = [];
 
     function createFlake() {
-      return {
-        x: Math.random() * width,
-        y: Math.random() * -height,
-        size: 30 + Math.random() * 20,
+      const img = document.createElement('img');
+      img.src = 'picture.gif';
+      img.style.position = 'fixed';
+      img.style.width = `${30 + Math.random() * 20}px`;
+      img.style.pointerEvents = 'none';
+      img.style.zIndex = 5;
+
+      const flake = {
+        el: img,
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * -window.innerHeight,
         speed: 1 + Math.random() * 2,
-        angle: Math.random() * 2 * Math.PI,
-        rotationSpeed: (Math.random() - 0.5) * 0.02
+        drift: (Math.random() - 0.5) * 1,
       };
+
+      img.style.left = `${flake.x}px`;
+      img.style.top = `${flake.y}px`;
+
+      snowContainer.appendChild(img);
+      flakes.push(flake);
     }
 
     for (let i = 0; i < 50; i++) {
-      flakes.push(createFlake());
+      createFlake();
     }
 
     function updateFlakes() {
-      ctx.clearRect(0, 0, width, height);
       flakes.forEach(flake => {
         flake.y += flake.speed;
-        flake.angle += flake.rotationSpeed;
-        if (flake.y > height + flake.size) {
-          Object.assign(flake, createFlake(), { y: -flake.size });
+        flake.x += flake.drift;
+
+        if (flake.y > window.innerHeight) {
+          flake.y = -50;
+          flake.x = Math.random() * window.innerWidth;
         }
 
-        ctx.save();
-        ctx.translate(flake.x, flake.y);
-        ctx.rotate(flake.angle);
-        ctx.drawImage(snowflakeImage, -flake.size/2, -flake.size/2, flake.size, flake.size);
-        ctx.restore();
+        flake.el.style.top = `${flake.y}px`;
+        flake.el.style.left = `${flake.x}px`;
       });
+
       requestAnimationFrame(updateFlakes);
     }
 
-    snowflakeImage.onload = () => {
-      updateFlakes();
-    };
+    updateFlakes();
 
     const customCursor = document.getElementById('customCursor');
     let hue = 0;
