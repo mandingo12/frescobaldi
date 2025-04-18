@@ -109,7 +109,7 @@
     });
 
     const snowflakeImage = new Image();
-    snowflakeImage.src = 'picture.gif';
+    snowflakeImage.src = 'picture.png';
 
     const flakes = [];
 
@@ -154,12 +154,10 @@
     let hue = 0;
 
     document.addEventListener('mousemove', (e) => {
-      customCursor.style.transform = translate(${e.clientX - 10}px, ${e.clientY - 10}px) rotate(${hue}deg); 
+      customCursor.style.transform = `translate(${e.clientX - 10}px, ${e.clientY - 10}px) rotate(${hue}deg)`; 
       hue = (hue + 5) % 360; 
-      customCursor.style.backgroundColor = hsl(${hue}, 100%, 50%);
+      customCursor.style.backgroundColor = `hsl(${hue}, 100%, 50%)`;
     });
   </script>
 </body>
 </html>
-
-
